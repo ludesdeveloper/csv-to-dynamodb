@@ -1,0 +1,37 @@
+org: funguardian
+app: aws-python-project
+service: aws-python-project
+
+frameworkVersion: '2 || 3'
+
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  region: ap-southeast-1
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'sqs:DeleteMessage'
+            - 'sqs:ReceiveMessage'
+            - 'sqs:GetQueueAttributes'
+          Resource: 'arn:aws:sqs:ap-southeast-1:root_id:csvtodynamodb'
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:*'
+          Resource: 'arn:aws:dynamodb:ap-southeast-1:root_id:table/csvtodynamodb'
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+            - 's3-object-lambda:*'
+          Resource: '*'
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - sqs: arn:aws:sqs:ap-southeast-1:root_id:csvtodynamodb 
+
